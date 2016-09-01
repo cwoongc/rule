@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rule">
+
+
+    <resultMap id="Rule" type="com.wcchoi.ruletest.model.CheckTargetRule">
+        <result property="ruleId" column="rule_id" javaType="Long" jdbcType="BIGINT"/>
+        <result property="ruleTargetId" column="rule_target_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="ruleTypeId" column="rule_type_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="conditionKind" column="condition_kind" javaType="String" jdbcType="VARCHAR"/>
+        <result property="conditionTypeId" column="condition_type_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="conditionEntityInstanceId" column="condition_entity_instance_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="derivedConditionValueTypeId" column="derived_condition_value_type_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="derivedConditionValue" column="derived_condition_value" javaType="String" jdbcType="VARCHAR"/>
+        <result property="derivedConditionValueName" column="derived_condition_value_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="derivedConditionValueDataType" column="derived_condition_value_data_type" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="selectConditions" parameterType="hashmap" resultMap="Rule">
+        select /* RuleMapper.selectConditions */
+          r.rule_id
+          ,r.rule_target_id
+          ,r.rule_type_id
+          , 'entity' as condition_kind
+          , ec.condition_entity_type_id as condition_type_id
+          , ec.condition_entity_instance_id
+          , null as derived_condition_value_type_id
+          , null as derived_condition_value
+          , null as derived_condition_value_name
+          , null as derived_condition_value_data_type
+        from rule r join entity_condition ec on r.rule_id = ec.rule_id
+        where 1=1
+              and r.rule_type_id = #{ruleTypeId}
+              and r.rule_target_id in
+              <foreach item="ruleTargetId" index="idx" collection="ruleTargetIds" open="(" separator="," close=")">
+                  #{ruleTargetId}
+              </foreach>
+        UNION ALL
+        select
+          r.rule_id
+          ,r.rule_target_id
+          ,r.rule_type_id
+          ,'derived' as condition_kind
+          , dc.derived_condition_type_id as condition_type_id
+          , NULL
+          , dcv.derived_condition_value_type_id
+          , dcv.derived_condition_value
+          , dcvt.derived_condition_value_name
+          , dcvt.derived_condition_value_data_type
+        from rule r join derived_condition dc
+            on r.rule_id = dc.rule_id
+          join derived_condition_value dcv on dc.derived_condition_id = dcv.derived_condition_id
+          left join derived_condition_value_type dcvt on dcv.derived_condition_value_type_id = dcvt.derived_condition_value_type_id
+        WHERE 1=1
+              and r.rule_type_id = #{ruleTypeId}
+              and r.rule_target_id in
+        <foreach item="ruleTargetId" index="idx" collection="ruleTargetIds" open="(" separator="," close=")">
+            #{ruleTargetId}
+        </foreach>
+    </select>
+
+
+</mapper>

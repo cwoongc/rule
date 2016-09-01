@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC
+        "-//APACHE//DTD LOG4J 1.2//EN" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <!-- ================================= appender ================================= -->
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%5p [%d{yyyy-MM-dd HH:mm:ss}, %F:%L]- %m%n" />
+        </layout>
+
+        <filter class="org.apache.log4j.varia.StringMatchFilter">
+            <param name="StringToMatch" value="Result" />
+            <param name="AcceptOnMatch" value="false" />
+        </filter>
+    </appender>
+
+
+    <appender name="ruleConsole" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%5p [%d{yyyy-MM-dd HH:mm:ss}, %F:%L]- %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="sqlConsole" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%5p %d %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="parameterConsole" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%5p %d %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ================================= logger ================================= -->
+    <logger name="org.springframework" additivity="false">
+        <level value="ERROR" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="java.sql">
+        <level value="INFO" />
+        <appender-ref ref="sqlConsole" />
+    </logger>
+
+    <logger name="jdbc.sqltiming" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="sqlConsole" />
+    </logger>
+
+
+    <logger name="com.wcchoi.ruletest" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="ruleConsole" />
+    </logger>
+
+    <root>
+        <level value="WARN" />
+        <appender-ref ref="console" />
+    </root>
+
+</log4j:configuration>
